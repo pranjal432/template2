@@ -1,21 +1,13 @@
 <?php
 
 require "config.php";
+$count1=0;
 
 if (isset($_POST['placeorder'])) {
 
   header("Location: orderplaced.php");
 
 } 
-
-
-
-
-
-
-
-
-
 
 ?>
 
@@ -124,8 +116,8 @@ if (isset($_POST['placeorder'])) {
                 <ul class="aa-head-top-nav-right">
                   <li><a href="account.html">My Account</a></li>
                   <li class="hidden-xs"><a href="wishlist.html">Wishlist</a></li>
-                  <li class="hidden-xs"><a href="cart.html">My Cart</a></li>
-                  <li class="hidden-xs"><a href="checkout.html">Checkout</a></li>
+                  <li class="hidden-xs"><a href="cart.php">My Cart</a></li>
+                  <li class="hidden-xs"><a href="checkout.php">Checkout</a></li>
                   <li><a href="" data-toggle="modal" data-target="#login-modal">Login</a></li>
                 </ul>
               </div>
@@ -158,32 +150,73 @@ if (isset($_POST['placeorder'])) {
                 <a class="aa-cart-link" href="#">
                   <span class="fa fa-shopping-basket"></span>
                   <span class="aa-cart-title">SHOPPING CART</span>
-                  <span class="aa-cart-notify">2</span>
+                  <span class="aa-cart-notify"><?php 
+                  require "config.php";
+                  $sql11="SELECT * from cart";
+      $result11=$conn->query($sql11);
+      if($result11->num_rows>0) {
+        while($row11=$result11->fetch_assoc()) {
+            $count1++;
+        }
+        echo $count1;
+        $count1=0;
+      } ?></span>
                 </a>
                 <div class="aa-cartbox-summary">
                   <ul>
-                    <li>
-                      <a class="aa-cartbox-img" href="#"><img src="img/woman-small-2.jpg" alt="img"></a>
-                      <div class="aa-cartbox-info">
-                        <h4><a href="#">Product Name</a></h4>
-                        <p>1 x $250</p>
-                      </div>
-                      <a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a>
-                    </li>
-                    <li>
-                      <a class="aa-cartbox-img" href="#"><img src="img/woman-small-1.jpg" alt="img"></a>
-                      <div class="aa-cartbox-info">
-                        <h4><a href="#">Product Name</a></h4>
-                        <p>1 x $250</p>
-                      </div>
-                      <a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a>
-                    </li>                    
+                  <?php
+
+require "config.php";
+
+$sql15="SELECT * from cart";
+$result15=$conn->query($sql15);
+if($result15->num_rows>0) {
+echo "<ul>";
+while($row15=$result15->fetch_assoc()) {
+
+echo '<li>
+<a class="aa-cartbox-img" href="#"><img src="img/women/'.$row15['image'].'" alt="img"></a>
+<div class="aa-cartbox-info">
+<h4><a href="#">'.$row15['name'].'</a></h4>
+<p>'.$row15['quantity'].' x $'.$row15['price'].'</p>
+</div>
+<a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a>
+</li>';
+            
+
+}
+}
+
+?>                    
                     <li>
                       <span class="aa-cartbox-total-title">
                         Total
                       </span>
                       <span class="aa-cartbox-total-price">
-                        $500
+                      <?php
+                      $totalcartitems=0;
+                      $totalitemsprice=0;
+
+$sql5="SELECT * from cart";
+
+$result=$conn->query($sql5);
+
+if ($result->num_rows>0) {
+    while ($row =$result->fetch_assoc()) {
+
+        
+            $totalcartitems=$totalcartitems+$row["quantity"];
+            $totalitemsprice=$totalitemsprice+
+            (($row["quantity"])*($row["price"]));
+        
+    
+        
+
+    }
+}
+     echo $totalitemsprice;
+
+                      ?>
                       </span>
                     </li>
                   </ul>
@@ -628,31 +661,36 @@ if (isset($_POST['placeorder'])) {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>T-Shirt <strong> x  1</strong></td>
-                          <td>$150</td>
-                        </tr>
-                        <tr>
-                          <td>Polo T-Shirt <strong> x  1</strong></td>
-                          <td>$250</td>
-                        </tr>
-                        <tr>
-                          <td>Shoes <strong> x  1</strong></td>
-                          <td>$350</td>
-                        </tr>
+                        
+                        
+                        <?php
+                          $totalitemsprice=0;
+                          $sql="SELECT * from cart";
+                          $result=$conn->query($sql);
+                          if ($result->num_rows>0) {
+                            while($row=$result->fetch_assoc()) {
+                              echo '<tr>
+                              <td>'.$row['name'].'<strong> x  '.$row['quantity'].'</strong></td>
+                              <td>'.($row['price']*$row['quantity']).'</td>
+                            </tr>';
+                            $totalitemsprice=$totalitemsprice+($row['price']*$row['quantity']);
+                            }
+                          }
+
+                        ?>
                       </tbody>
                       <tfoot>
-                        <tr>
+                        <!-- <tr>
                           <th>Subtotal</th>
                           <td>$750</td>
                         </tr>
                          <tr>
                           <th>Tax</th>
                           <td>$35</td>
-                        </tr>
+                        </tr> -->
                          <tr>
                           <th>Total</th>
-                          <td>$785</td>
+                          <td><?php echo $totalitemsprice; ?></td>
                         </tr>
                       </tfoot>
                     </table>

@@ -1,3 +1,19 @@
+<?php
+
+$limit=10;
+$count1=0;
+
+if (isset($_GET['id1'])) {
+  $id1=$_GET['id1'];
+  $n=($id1-1)*$limit;
+
+} else {
+  $n=1;
+}
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -104,8 +120,8 @@
                 <ul class="aa-head-top-nav-right">
                   <li><a href="account.html">My Account</a></li>
                   <li class="hidden-xs"><a href="wishlist.html">Wishlist</a></li>
-                  <li class="hidden-xs"><a href="cart.html">My Cart</a></li>
-                  <li class="hidden-xs"><a href="checkout.html">Checkout</a></li>
+                  <li class="hidden-xs"><a href="cart.php">My Cart</a></li>
+                  <li class="hidden-xs"><a href="checkout.php">Checkout</a></li>
                   <li><a href="" data-toggle="modal" data-target="#login-modal">Login</a></li>
                 </ul>
               </div>
@@ -135,39 +151,80 @@
               <!-- / logo  -->
                <!-- cart box -->
               <div class="aa-cartbox">
-                <a class="aa-cart-link" href="#">
+                <a class="aa-cart-link" href="cart.php">
                   <span class="fa fa-shopping-basket"></span>
                   <span class="aa-cart-title">SHOPPING CART</span>
-                  <span class="aa-cart-notify">2</span>
+                  <span class="aa-cart-notify"><?php 
+                  require "config.php";
+                  $sql11="SELECT * from cart";
+      $result11=$conn->query($sql11);
+      if($result11->num_rows>0) {
+        while($row11=$result11->fetch_assoc()) {
+            $count1++;
+        }
+        echo $count1;
+        $count1=0;
+      } ?></span>
                 </a>
                 <div class="aa-cartbox-summary">
-                  <ul>
-                    <li>
-                      <a class="aa-cartbox-img" href="#"><img src="img/woman-small-2.jpg" alt="img"></a>
-                      <div class="aa-cartbox-info">
-                        <h4><a href="#">Product Name</a></h4>
-                        <p>1 x $250</p>
-                      </div>
-                      <a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a>
-                    </li>
-                    <li>
-                      <a class="aa-cartbox-img" href="#"><img src="img/woman-small-1.jpg" alt="img"></a>
-                      <div class="aa-cartbox-info">
-                        <h4><a href="#">Product Name</a></h4>
-                        <p>1 x $250</p>
-                      </div>
-                      <a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a>
-                    </li>                    
+                
+                  <?php
+
+require "config.php";
+
+$sql15="SELECT * from cart";
+$result15=$conn->query($sql15);
+if($result15->num_rows>0) {
+echo "<ul>";
+while($row15=$result15->fetch_assoc()) {
+
+echo '<li>
+<a class="aa-cartbox-img" href="#"><img src="img/women/'.$row15['image'].'" alt="img"></a>
+<div class="aa-cartbox-info">
+<h4><a href="#">'.$row15['name'].'</a></h4>
+<p>'.$row15['quantity'].' x $'.$row15['price'].'</p>
+</div>
+<a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a>
+</li>';
+            
+
+}
+}
+
+?>                    
                     <li>
                       <span class="aa-cartbox-total-title">
                         Total
                       </span>
                       <span class="aa-cartbox-total-price">
-                        $500
+                      <?php
+                      $totalcartitems=0;
+                      $totalitemsprice=0;
+
+$sql5="SELECT * from cart";
+
+$result=$conn->query($sql5);
+
+if ($result->num_rows>0) {
+    while ($row =$result->fetch_assoc()) {
+
+        
+            $totalcartitems=$totalcartitems+$row["quantity"];
+            $totalitemsprice=$totalitemsprice+
+            (($row["quantity"])*($row["price"]));
+        
+    
+        
+
+    }
+}
+     echo $totalitemsprice;
+
+                      ?>
                       </span>
                     </li>
                   </ul>
-                  <a class="aa-cartbox-checkout aa-primary-btn" href="#">Checkout</a>
+                  <a class="aa-cartbox-checkout aa-primary-btn" href="checkout.php">Checkout</a>
                 </div>
               </div>
               <!-- / cart box -->
@@ -404,7 +461,7 @@
                                                     }
     
                                                     
-                                                    $sql3="SELECT * from products";
+                                                    $sql3="SELECT * from products  LIMIT {$n},{$limit}";
                                     $result3=$conn->query($sql3);
                                     if($result3->num_rows>0) {
                                         while($row3=$result3->fetch_assoc()) {
@@ -413,12 +470,17 @@
 
                                                     echo '<li>
                     <figure>
-                      <a class="aa-product-img" href="#"><img src="img/women/'.$row3['image'].'" alt="polo shirt img"></a>
-                      <a class="aa-add-card-btn"href="#"><span class="fa fa-shopping-cart"></span>Add To Cart</a>
+                      <a class="aa-product-img" href="product-detail.php?id='.$row3['product_id'].'"><img src="img/women/'.$row3['image'].'" alt="polo shirt img"></a>
+                      <a class="aa-add-card-btn" href="cart1.php?id='.$row3['product_id'].'"><span class="fa fa-shopping-cart"></span>Add To Cart</a>
                       <figcaption>
                         <h4 class="aa-product-title"><a href="#">'.$row3['name'].'</a></h4>Price:
                         <span class="aa-product-price">'.$row3['price'].' /-</span>
                         <p class="aa-product-descrip">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Numquam accusamus facere iusto, autem soluta amet sapiente ratione inventore nesciunt a, maxime quasi consectetur, rerum illum.</p>
+                        <div class="aa-product-hvr-content">
+                        
+                        <a href="#" class="quickview" data-toggle2="tooltip" data-placement="top" title="Quick View" data-toggle="modal" data-target="#quick-view-modal" data-productid='.$row3['product_id'].' data-productname='.$row3['name'].' data-productimage='.$row3['image'].' data-productprice='.$row3['price'].' data-shortdesc='.$row3['short_desc'].' data-catgid='.$row3['category_id'].'><span class="fa fa-search"></span></a>
+                        
+                        </div>
                       </figcaption>
                     </figure>                         
                     
@@ -460,35 +522,18 @@
                                       </a>
                                   </div>
                               </div>
-                              <div class="simpleLens-thumbnails-container">
-                                  <a href="#" class="simpleLens-thumbnail-wrapper"
-                                     data-lens-image="img/view-slider/large/polo-shirt-1.png"
-                                     data-big-image="img/view-slider/medium/polo-shirt-1.png">
-                                      <img src="img/view-slider/thumbnail/polo-shirt-1.png">
-                                  </a>                                    
-                                  <a href="#" class="simpleLens-thumbnail-wrapper"
-                                     data-lens-image="img/view-slider/large/polo-shirt-3.png"
-                                     data-big-image="img/view-slider/medium/polo-shirt-3.png">
-                                      <img src="img/view-slider/thumbnail/polo-shirt-3.png">
-                                  </a>
-
-                                  <a href="#" class="simpleLens-thumbnail-wrapper"
-                                     data-lens-image="img/view-slider/large/polo-shirt-4.png"
-                                     data-big-image="img/view-slider/medium/polo-shirt-4.png">
-                                      <img src="img/view-slider/thumbnail/polo-shirt-4.png">
-                                  </a>
-                              </div>
+                              
                             </div>
                           </div>
                         </div>
                         <!-- Modal view content -->
                         <div class="col-md-6 col-sm-6 col-xs-12">
                           <div class="aa-product-view-content">
-                            <h3>T-Shirt</h3>
-                            <div class="aa-price-block">
-                              <span class="aa-product-view-price">$34.99</span>
-                              <p class="aa-product-avilability">Avilability: <span>In stock</span></p>
-                            </div>
+                          <h3 class="v"></h3>
+                      <div class="aa-price-block">
+                        <span class="aa-product-view-price"></span>
+                        <p class="aa-product-avilability">Avilability: <span>In stock</span></p>
+                      </div>
                             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officiis animi, veritatis quae repudiandae quod nulla porro quidem, itaque quis quaerat!</p>
                             <h4>Size</h4>
                             <div class="aa-prod-view-size">
@@ -528,20 +573,31 @@
             <div class="aa-product-catg-pagination">
               <nav>
                 <ul class="pagination">
-                  <li>
-                    <a href="#" aria-label="Previous">
+                <li>
+                    <a href="producttagfilter.php?id1=<?php echo ($id1-1); ?>&tag=<?php echo $_GET['tag']; ?>" aria-label="Previous">
                       <span aria-hidden="true">&laquo;</span>
                     </a>
                   </li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li><a href="#">4</a></li>
-                  <li><a href="#">5</a></li>
+                  <?php
+                  
+                  echo '<li><a href="producttagfilter.php?tag='.$_GET['tag'].'">1</a></li>';
+                  $sql14="SELECT * from products";
+                  $result14=$conn->query($sql14);
+                  if ($result14->num_rows>0) {
+                    $r=$result14->num_rows;
+                    $page=ceil($r/$limit);
+                    for($i=2;$i<=$page;$i++)
+                    {
+                       echo '<li><a href="producttagfilter.php?id1='.$i.'&tag='.$_GET['tag'].'">'.$i.'</a></li>';
+                    }
+                  }
+
+                  ?>
                   <li>
-                    <a href="#" aria-label="Next">
+                    <a href="producttagfilter.php?id1=<?php echo ($id1+1); ?>&tag=<?php echo $_GET['tag']; ?>" aria-label="Next">
                       <span aria-hidden="true">&raquo;</span>
                     </a>
+                    
                   </li>
                 </ul>
               </nav>
@@ -551,6 +607,10 @@
         <div class="col-lg-3 col-md-3 col-sm-4 col-md-pull-9">
           <aside class="aa-sidebar">
             <!-- single sidebar -->
+            <div class="aa-sidebar-widget">
+              
+              <a class="aa-cart-view-btn" style="margin-top:30px;" href="product.php">Remove all filters</a>
+            </div>
             <div class="aa-sidebar-widget">
               <h3>Category</h3>
               <ul class="aa-catg-nav">
@@ -664,27 +724,29 @@
               <h3>Top Rated Products</h3>
               <div class="aa-recently-views">
                 <ul>
-                  <li>
-                    <a href="#" class="aa-cartbox-img"><img alt="img" src="img/woman-small-2.jpg"></a>
-                    <div class="aa-cartbox-info">
-                      <h4><a href="#">Product Name</a></h4>
-                      <p>1 x $250</p>
-                    </div>                    
-                  </li>
-                  <li>
-                    <a href="#" class="aa-cartbox-img"><img alt="img" src="img/woman-small-1.jpg"></a>
-                    <div class="aa-cartbox-info">
-                      <h4><a href="#">Product Name</a></h4>
-                      <p>1 x $250</p>
-                    </div>                    
-                  </li>
-                   <li>
-                    <a href="#" class="aa-cartbox-img"><img alt="img" src="img/woman-small-2.jpg"></a>
-                    <div class="aa-cartbox-info">
-                      <h4><a href="#">Product Name</a></h4>
-                      <p>1 x $250</p>
-                    </div>                    
-                  </li>                                      
+                <?php
+
+require "config.php";
+
+$sql20="SELECT * from products ORDER BY price DESC LIMIT 3";
+$result20=$conn->query($sql20);
+if($result20->num_rows>0) {
+  while($row20=$result20->fetch_assoc()) {
+
+
+
+    echo '<li>
+    <a href="#" class="aa-cartbox-img"><img alt="img" src="img/women/'.$row20['image'].'"></a>
+    <div class="aa-cartbox-info">
+      <h4><a href="#">'.$row20['name'].'</a></h4>
+      <p>'.$row20['price'].'</p>
+    </div>                    
+  </li>';
+
+  }
+}
+
+?>                                      
                 </ul>
               </div>                            
             </div>
@@ -856,6 +918,67 @@
   <script type="text/javascript" src="js/nouislider.js"></script>
   <!-- Custom js -->
   <script src="js/custom.js"></script> 
+
+  <script>
+                $(document).ready(function() {
+                  $(".quickview").click(function() {
+                   
+                    
+                    <?php
+                    
+                   
+                    $pid1='$(".v").html($(this).data("productname"));';
+                    echo $pid1;
+
+                    echo '$(".aa-product-view-price").html($(this).data("productprice"));';
+
+                    echo '$(".shortdesc").html($(this).data("shortdesc"));';
+
+
+                    echo '$(".q").html($(this).data("productimage"));';
+
+
+                    
+
+                    
+
+                  
+                    
+                    
+
+
+                    
+
+
+                    
+
+                    
+
+                    
+                    
+
+                    
+
+                    
+
+
+                  
+
+
+
+
+                    
+
+                    ?>
+
+                    
+                    
+                    
+                    
+
+                  });
+                });
+              </script>
   
 
   </body>

@@ -1,3 +1,33 @@
+<?php
+
+    require "config.php";
+    $count=0;
+    $count1=0;
+
+    if(isset($_POST['updatecart'])) {
+
+      $sql8="SELECT * from cart";
+      $result8=$conn->query($sql8);
+      if($result8->num_rows>0) {
+        while($row8=$result8->fetch_assoc()) {
+            $count++;
+        }
+      }
+
+      for($i=0;$i<$count;$i++) {
+        $sql9="UPDATE cart set quantity='".$_POST["a"][$i]."' WHERE cart_id='".$_POST["cartid"][$i]."'";
+        if($conn->query($sql9)==true) {
+          
+        } 
+      }
+
+
+    }
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -103,8 +133,8 @@
                 <ul class="aa-head-top-nav-right">
                   <li><a href="account.html">My Account</a></li>
                   <li class="hidden-xs"><a href="wishlist.html">Wishlist</a></li>
-                  <li class="hidden-xs"><a href="cart.html">My Cart</a></li>
-                  <li class="hidden-xs"><a href="checkout.html">Checkout</a></li>
+                  <li class="hidden-xs"><a href="cart.php">My Cart</a></li>
+                  <li class="hidden-xs"><a href="checkout.php">Checkout</a></li>
                   <li><a href="" data-toggle="modal" data-target="#login-modal">Login</a></li>
                 </ul>
               </div>
@@ -137,36 +167,75 @@
                 <a class="aa-cart-link" href="#">
                   <span class="fa fa-shopping-basket"></span>
                   <span class="aa-cart-title">SHOPPING CART</span>
-                  <span class="aa-cart-notify">2</span>
+                  <span class="aa-cart-notify"><?php $sql11="SELECT * from cart";
+      $result11=$conn->query($sql11);
+      if($result11->num_rows>0) {
+        while($row11=$result11->fetch_assoc()) {
+            $count1++;
+        }
+        echo $count1;
+        $count1=0;
+      } ?></span>
                 </a>
                 <div class="aa-cartbox-summary">
                   <ul>
-                    <li>
-                      <a class="aa-cartbox-img" href="#"><img src="img/woman-small-2.jpg" alt="img"></a>
-                      <div class="aa-cartbox-info">
-                        <h4><a href="#">Product Name</a></h4>
-                        <p>1 x $250</p>
-                      </div>
-                      <a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a>
-                    </li>
-                    <li>
-                      <a class="aa-cartbox-img" href="#"><img src="img/woman-small-1.jpg" alt="img"></a>
-                      <div class="aa-cartbox-info">
-                        <h4><a href="#">Product Name</a></h4>
-                        <p>1 x $250</p>
-                      </div>
-                      <a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a>
-                    </li>                    
+                  <?php
+
+require "config.php";
+
+$sql15="SELECT * from cart";
+$result15=$conn->query($sql15);
+if($result15->num_rows>0) {
+echo "<ul>";
+while($row15=$result15->fetch_assoc()) {
+
+echo '<li>
+<a class="aa-cartbox-img" href="#"><img src="img/women/'.$row15['image'].'" alt="img"></a>
+<div class="aa-cartbox-info">
+<h4><a href="#">'.$row15['name'].'</a></h4>
+<p>'.$row15['quantity'].' x $'.$row15['price'].'</p>
+</div>
+<a class="aa-remove-product" href="deletecartitem.php?cartid='.$row15['cart_id'].'"><span class="fa fa-times"></span></a>
+</li>';
+            
+
+}
+}
+
+?>                
                     <li>
                       <span class="aa-cartbox-total-title">
                         Total
                       </span>
                       <span class="aa-cartbox-total-price">
-                        $500
+                      <?php
+                      $totalcartitems=0;
+                      $totalitemsprice=0;
+
+$sql5="SELECT * from cart";
+
+$result=$conn->query($sql5);
+
+if ($result->num_rows>0) {
+    while ($row =$result->fetch_assoc()) {
+
+        
+            $totalcartitems=$totalcartitems+$row["quantity"];
+            $totalitemsprice=$totalitemsprice+
+            (($row["quantity"])*($row["price"]));
+        
+    
+        
+
+    }
+}
+     echo $totalitemsprice;
+
+                      ?>
                       </span>
                     </li>
                   </ul>
-                  <a class="aa-cartbox-checkout aa-primary-btn" href="#">Checkout</a>
+                  <a class="aa-cartbox-checkout aa-primary-btn" href="checkout.php">Checkout</a>
                 </div>
               </div>
               <!-- / cart box -->
@@ -343,13 +412,14 @@
        <div class="col-md-12">
          <div class="cart-view-area">
            <div class="cart-view-table">
-             <form action="">
+             <form action="cart.php" method="POST">
                <div class="table-responsive">
                   <table class="table">
                     <thead>
                       <tr>
-                        <th></th>
-                        <th></th>
+                        <th>Action_delete</th>
+                        <th>Cart id</th>
+                        <th>Product Image</th>
                         <th>Product</th>
                         <th>Price</th>
                         <th>Quantity</th>
@@ -376,11 +446,12 @@
                       if($result15->num_rows>0) {
                         while($row15=$result15->fetch_assoc()) {
                            echo '<tr>
-                           <td><a class="remove" href="#"><fa class="fa fa-close"></fa></a></td>
+                           <td><a class="remove" href="deletecartitem.php?cartid='.$row15['cart_id'].'"><fa class="fa fa-close"></fa></a></td>
+                           <td><input type="text" value="'.$row15['cart_id'].'" name="cartid[]" style="width:35px;"></td>
                            <td><a href="#"><img src="img/women/'.$row15['image'].'" alt="img"></a></td>
                            <td><a class="aa-cart-title" href="#">'.$row15['name'].'</a></td>
                            <td>'.$row15['price'].'</td>
-                           <td><input class="aa-cart-quantity" type="number" value="'.$row15['quantity'].'"></td>
+                           <td><input class="aa-cart-quantity" type="number" value="'.$row15['quantity'].'" name="a[]"></td>
                            <td>'.($row15['price']*$row15['quantity']).'</td>
                          </tr>';
                         }
@@ -407,7 +478,7 @@
                       </tbody>
                   </table>
                 </div>
-             </form>
+             <!-- </form> -->
              <!-- Cart Total view -->
              <div class="cart-view-total">
                <h4>Cart Totals</h4>
@@ -424,7 +495,11 @@
                  </tbody>
                </table>
                <a href="checkout.php" class="aa-cart-view-btn">Proced to Checkout</a>
+               <!-- <a href="#" class="aa-cart-view-btn">Update Cart</a> -->
+               <input type="submit" value="Update Cart" name="updatecart" class="aa-cart-view-btn" style="margin-top:40px;margin-right:98px;">
+               
              </div>
+             </form>
            </div>
          </div>
        </div>
@@ -569,6 +644,7 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div>
+  <div id="w"></div>
 
 
     
@@ -591,7 +667,25 @@
     <!-- Price picker slider -->
     <script type="text/javascript" src="js/nouislider.js"></script>
     <!-- Custom js -->
-    <script src="js/custom.js"></script> 
+    <script src="js/custom.js"></script>
+
+    <script>
+
+        $(document).ready(function() {
+
+          $(".aa-cart-view-btn").click(function() {
+
+            
+            
+            var n=$(".aa-cart-quantity").val();
+            $("#w").html(n);
+
+
+          });
+
+        });
+
+    </script>
 
   </body>
 </html>

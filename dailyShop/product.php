@@ -2,13 +2,14 @@
 <?php
 
 $limit=10;
+$count1=0;
 
 if (isset($_GET['id1'])) {
   $id1=$_GET['id1'];
   $n=($id1-1)*$limit;
 
 } else {
-  $n=1;
+  $n=0;
 }
 
 
@@ -121,8 +122,8 @@ if (isset($_GET['id1'])) {
                 <ul class="aa-head-top-nav-right">
                   <li><a href="account.html">My Account</a></li>
                   <li class="hidden-xs"><a href="wishlist.html">Wishlist</a></li>
-                  <li class="hidden-xs"><a href="cart.html">My Cart</a></li>
-                  <li class="hidden-xs"><a href="checkout.html">Checkout</a></li>
+                  <li class="hidden-xs"><a href="cart.php">My Cart</a></li>
+                  <li class="hidden-xs"><a href="checkout.php">Checkout</a></li>
                   <li><a href="" data-toggle="modal" data-target="#login-modal">Login</a></li>
                 </ul>
               </div>
@@ -152,10 +153,20 @@ if (isset($_GET['id1'])) {
               <!-- / logo  -->
                <!-- cart box -->
               <div class="aa-cartbox">
-                <a class="aa-cart-link" href="#">
+                <a class="aa-cart-link" href="cart.php">
                   <span class="fa fa-shopping-basket"></span>
                   <span class="aa-cart-title">SHOPPING CART</span>
-                  <span class="aa-cart-notify"></span>
+                  <span class="aa-cart-notify"><?php 
+                  require "config.php";
+                  $sql11="SELECT * from cart";
+      $result11=$conn->query($sql11);
+      if($result11->num_rows>0) {
+        while($row11=$result11->fetch_assoc()) {
+            $count1++;
+        }
+        echo $count1;
+        $count1=0;
+      } ?></span>
                 </a>
                 <div class="aa-cartbox-summary">
                   
@@ -176,7 +187,7 @@ if($result15->num_rows>0) {
          <h4><a href="#">'.$row15['name'].'</a></h4>
          <p>'.$row15['quantity'].' x $'.$row15['price'].'</p>
        </div>
-       <a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a>
+       <a class="aa-remove-product" href="deletecartitem.php?cartid='.$row15['cart_id'].'"><span class="fa fa-times"></span></a>
      </li>';
                                 
 
@@ -556,12 +567,13 @@ $sql="SELECT * from products LIMIT {$n},{$limit}";
                   
                   <?php
                   
+                  echo '<li><a href="product.php">1</a></li>';
                   $sql14="SELECT * from products";
                   $result14=$conn->query($sql14);
                   if ($result14->num_rows>0) {
                     $r=$result14->num_rows;
                     $page=ceil($r/$limit);
-                    for($i=1;$i<=$page;$i++)
+                    for($i=2;$i<=$page;$i++)
                     {
                        echo '<li><a href="product.php?id1='.$i.'">'.$i.'</a></li>';
                     }
@@ -583,6 +595,10 @@ $sql="SELECT * from products LIMIT {$n},{$limit}";
         <div class="col-lg-3 col-md-3 col-sm-4 col-md-pull-9">
           <aside class="aa-sidebar">
             <!-- single sidebar -->
+            <div class="aa-sidebar-widget">
+              
+              <a class="aa-cart-view-btn" style="margin-top:30px;" href="product.php">Remove all filters</a>
+            </div>
             <div class="aa-sidebar-widget">
               <h3>Category</h3>
               <ul class="aa-catg-nav">
@@ -731,7 +747,7 @@ $sql="SELECT * from products LIMIT {$n},{$limit}";
 
 
                           echo '<li>
-                          <a href="#" class="aa-cartbox-img"><img alt="img" src="img/woman-small-2.jpg"></a>
+                          <a href="#" class="aa-cartbox-img"><img alt="img" src="img/women/'.$row20['image'].'"></a>
                           <div class="aa-cartbox-info">
                             <h4><a href="#">'.$row20['name'].'</a></h4>
                             <p>'.$row20['price'].'</p>
