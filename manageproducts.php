@@ -8,7 +8,7 @@
 
 $limit=10;
 //$count1=0;
-
+$id1=1;
 if (isset($_GET['id1'])) {
   $id1=$_GET['id1'];
   $n=($id1-1)*$limit;
@@ -98,6 +98,7 @@ if (isset($_GET['id1'])) {
 								   <th>Product Name</th>
 								   <th>Price</th>
 								   <th>Image</th>
+								   <th>Actions</th>
 								   
 								</tr>
 								
@@ -116,9 +117,10 @@ if (isset($_GET['id1'])) {
 										</div>
 										
 										<div class="pagination">
-											<a href="#" title="First Page">&laquo; First</a><a href="#" title="Previous Page">&laquo; Previous</a>
-											<a href="manageproducts.php" class="number <?php if ($n==1) :?>current<?php endif; ?>">1</a>
+											<a href="manageproducts.php" title="First Page">&laquo; First</a><a href="manageproducts.php?id1=<?php echo ($id1-1); ?>" title="Previous Page">&laquo; Previous</a>
+											<a href="manageproducts.php" class="number <?php if ($n==0) :?>current<?php endif; ?>">1</a>
 												<?php
+												$count2=0;
 												require "config.php";
 												$sql14="SELECT * from products";
                   $result14=$conn->query($sql14);
@@ -127,12 +129,12 @@ if (isset($_GET['id1'])) {
                     $page=ceil($r/$limit);
                     for($i=2;$i<=$page;$i++)
                     {
-					  
+					   $count2++;
 					   echo '<a href="manageproducts.php?id1='.$i.'" class="number">'.$i.'</a>';
                     }
                   } ?>
 
-											<a href="#" title="Next Page">Next &raquo;</a><a href="#" title="Last Page">Last &raquo;</a>
+											<a href="manageproducts.php?id1=<?php echo ($id1+1); ?>" title="Next Page">Next &raquo;</a><a href="manageproducts.php?id1=<?php echo ($count2+1); $count2=0; ?>" title="Last Page">Last &raquo;</a>
 										</div> <!-- End .pagination -->
 										<div class="clear"></div>
 									</td>
@@ -155,8 +157,8 @@ if (isset($_GET['id1'])) {
 									<td>".$row6['image']."</td>
 									<td>
 								
-										 <a href='#' title='Edit'><img src='resources/images/icons/pencil.png' alt='Edit' /></a>
-										 <a href='#' title='Delete'><img src='resources/images/icons/cross.png' alt='Delete' /></a> 
+										 <a href='?edit' title='Edit'><img src='resources/images/icons/pencil.png' alt='Edit' /></a>
+										 <a href='deleteproduct.php?delete=".$row6['product_id']."&id1=".$id1."' title='Delete'><img src='resources/images/icons/cross.png' alt='Delete' /></a> 
 										 <a href='#' title='Edit Meta'><img src='resources/images/icons/hammer_screwdriver.png' alt='Edit Meta' /></a>
 									    </td>
 								     </tr>";
@@ -255,6 +257,8 @@ if (isset($_GET['id1'])) {
 			</div> -->
 			
 			<!-- End Notifications -->
+
+
 
 <?php 
 
