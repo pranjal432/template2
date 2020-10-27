@@ -2,23 +2,14 @@
 
 	require "header.php";
 	require "sidebar.php";
-	require "config.php";
-?>
-
-<?php
-
-    if(isset($_POST['submit'])) {
-		$sql30="INSERT INTO categories(category_name) VALUES('".$_POST['categoryname']."')";
-		if($conn->query($sql30)==true) {
-			
-		}
-	}
-
 ?>
 
 <?php
 
 $limit=10;
+if(isset($_GET['edit'])) {
+    $z=$_GET['edit'];
+}
 //$count1=0;
 $id1=1;
 if (isset($_GET['id1'])) {
@@ -82,11 +73,6 @@ if (isset($_GET['id1'])) {
 				<div class="content-box-header">
 					
 					<h3>Content box</h3>
-
-					<ul class="content-box-tabs">
-						<li><a href="#tab1" class="default-tab">Manage</a></li> <!-- href must be unique and match the id of target div -->
-						<li><a href="#tab2">Add</a></li>
-					</ul>
 					
 					
 					
@@ -98,121 +84,70 @@ if (isset($_GET['id1'])) {
 					
 					<div class="tab-content default-tab" id="tab1"> <!-- This is the target div. id must match the href of this div's tab -->
 						
-						
+						<!-- <div class="notification attention png_bg">
+							<a href="#" class="close"><img src="resources/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+							<div>
+								This is a Content Box. You can put whatever you want in it. By the way, you can close this notification with the top-right cross.
+							</div>
+						</div> -->
 						
 						<table>
 							
 							<thead>
 								<tr>
-								   <th><input class="check-all" type="checkbox" /></th>
-								   <th>Category Id</th>
-								   <th>Category name</th>
-								   <th>Actions</th>
+								   
+								   <th>Product ID</th>
+								   <th>Category ID</th>
+								   <th>Product Name</th>
+								   <th>Price</th>
+								   <th>Image</th>
+								   <th>Action</th>
 								   
 								</tr>
 								
 							</thead>
 						 
-							<tfoot>
-								<tr>
-									<td colspan="6">
-										<div class="bulk-actions align-left">
-											<select name="dropdown">
-												<option value="option1">Choose an action...</option>
-												<option value="option2">Edit</option>
-												<option value="option3">Delete</option>
-											</select>
-											<a class="button" href="#">Apply to selected</a>
-										</div>
-										
-										<div class="pagination">
-										<a href="manageusers.php" title="First Page">&laquo; First</a><a href="manageusers.php?id1=<?php echo ($id1-1); ?>" title="Previous Page">&laquo; Previous</a>
-											<a href="manageusers.php" class="number <?php if ($n==0) :?>current<?php endif; ?>">1</a>
-											<?php
-												$count2=0;
-												require "config.php";
-												$sql14="SELECT * from users";
-                  $result14=$conn->query($sql14);
-                  if ($result14->num_rows>0) {
-                    $r=$result14->num_rows;
-                    $page=ceil($r/$limit);
-                    for($i=2;$i<=$page;$i++)
-                    {
-					   $count2++;
-					   echo '<a href="manageusers.php?id1='.$i.'" class="number">'.$i.'</a>';
-                    }
-                  } ?>
-											
-											
-											<a href="manageusers.php?id1=<?php echo ($id1+1); ?>" title="Next Page">Next &raquo;</a><a href="manageusers.php?id1=<?php echo ($count2+1); $count2=0; ?>" title="Last Page">Last &raquo;</a>
-										</div> <!-- End .pagination -->
-										<div class="clear"></div>
-									</td>
-								</tr>
-							</tfoot>
+							
 						 
 							<tbody>
+                                <form method="POST">
 								
-								<?php
-
-								require "config.php";
-
-								$sql="SELECT * from categories  LIMIT {$n},{$limit}";
-								$result=$conn->query($sql);
-								if($result->num_rows>0) {
-									while($row =$result->fetch_assoc()) {
-										echo "<tr>
-										<td><input type='checkbox' /></td>
-										<td>".$row['category_id']."</td>
-										<td>".$row['category_name']."</td>
-										
-										<td>
-											
-											 <a href='#' title='Edit'><img src='resources/images/icons/pencil.png' alt='Edit' /></a>
-											 <a href='deletecategory.php?delete=".$row['category_id']."&id1=".$id1."' title='Delete'><img src='resources/images/icons/cross.png' alt='Delete' /></a> 
-											 
-										</td>
-									</tr>";
-									}
-								}
-
-								?>
+									<?php
+									    require "config.php";
+										$sql6="SELECT * from products  LIMIT {$n},{$limit}";
+										$result6=$conn->query($sql6);
+										if($result6->num_rows>0) {
+											while($row6=$result6->fetch_assoc()) {
+                                                if($row6['product_id']==$z) {
+                                                    $_FILES['a']=$row6['image'];
+												echo "<tr>
+												      <td>".$row6['product_id']."</td>			
+									<td>".$row6['category_id']."</td>
+									<td><input type='text' value='".$row6['name']."' name='n'></td>
+									<td><input type='text' value='".$row6['price']."' style='width:60px;' name='p'></td>
+									<td><input type='file' name='f'></td>
+									<td>
 								
+										 <input type='submit' value='Update' style='color:green;' name='update'>
+                                         
+										 
+									    </td>
+                                     </tr>";
+                                                }
+											}
+										}
+                                    ?>
+									<!-- <a href='updateproduct1.php?id=&name='>Update</a> -->
+									
+                                </form>
+									
 							</tbody>
 							
 						</table>
 						
 					</div> <!-- End #tab1 -->
-
-					<div class="tab-content" id="tab2">
 					
-					<form action="#" method="post">
-						
-						<fieldset> <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
-							
-							<p>
-								<label>Category Name</label>
-									<input class="text-input small-input" type="text" id="small-input" name="categoryname" />
-									<br /><small>Enter the new Category name</small>
-							</p>
-							
-							
-							
-							
-							
-							<p>
-								<input class="button" type="submit" value="Submit" name="submit"/>
-							</p>
-							
-						</fieldset>
-						
-						<div class="clear"></div><!-- End .clear -->
-						
-					</form>
-					
-				</div> <!-- End #tab2 -->
-					
-					      
+					       
 					
 				</div> <!-- End .content-box-content -->
 				
@@ -296,7 +231,38 @@ if (isset($_GET['id1'])) {
 				</div>
 			</div> -->
 			
-			<!-- End Notifications -->
+            <!-- End Notifications -->
+            
+
+<?php
+
+    if (isset($_POST['update'])) {
+        
+
+           $sql35="UPDATE products set name='".$_POST['n']."' WHERE product_id='".$_GET['edit']."'";
+           if($conn->query($sql35)==true) {
+               //echo "<center>updated</center>";
+           }
+           $sql36="UPDATE products set price='".$_POST['p']."' WHERE product_id='".$_GET['edit']."'";
+           if($conn->query($sql36)==true) {
+               //echo "<center>updated</center>";
+           }
+           $sql37="UPDATE products set image='".$_POST['f']."' WHERE product_id='".$_GET['edit']."'";
+           if($conn->query($sql37)==true) {
+               //echo "<center>updated</center>";
+              
+           }
+		   echo "<center><a href='manageproducts.php?id1=".$_GET['id1']."'>Go back to manageproducts.php</a></center>";
+
+           
+
+        
+        
+    }
+
+?>
+
+
 
 <?php 
 

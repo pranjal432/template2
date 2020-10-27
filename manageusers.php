@@ -156,7 +156,7 @@ if (isset($_GET['id1'])) {
 											
 											 <a href='#' title='Edit'><img src='resources/images/icons/pencil.png' alt='Edit' /></a>
 											 <a href='deleteuser.php?delete=".$row['user_id']."&id1=".$id1."' title='Delete'><img src='resources/images/icons/cross.png' alt='Delete' /></a> 
-											 <a href='#' title='Edit Meta'><img src='resources/images/icons/hammer_screwdriver.png' alt='Edit Meta' /></a>
+											 
 										</td>
 									</tr>";
 									}

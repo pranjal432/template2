@@ -2,6 +2,19 @@
 
 	require "header.php";
 	require "sidebar.php";
+	require "config.php";
+?>
+
+
+<?php
+
+    if(isset($_POST['submit'])) {
+		$sql30="INSERT INTO tags(tagname) VALUES('".$_POST['tagname']."')";
+		if($conn->query($sql30)==true) {
+			
+		}
+	}
+
 ?>
 
 <?php
@@ -70,6 +83,11 @@ if (isset($_GET['id1'])) {
 				<div class="content-box-header">
 					
 					<h3>Content box</h3>
+
+					<ul class="content-box-tabs">
+						<li><a href="#tab1" class="default-tab">Manage</a></li> <!-- href must be unique and match the id of target div -->
+						<li><a href="#tab2">Add</a></li>
+					</ul>
 					
 					
 					
@@ -153,7 +171,7 @@ if (isset($_GET['id1'])) {
 											
 											 <a href='#' title='Edit'><img src='resources/images/icons/pencil.png' alt='Edit' /></a>
 											 <a href='deletetag.php?delete=".$row['tag_id']."&id1=".$id1."' title='Delete'><img src='resources/images/icons/cross.png' alt='Delete' /></a> 
-											 <a href='#' title='Edit Meta'><img src='resources/images/icons/hammer_screwdriver.png' alt='Edit Meta' /></a>
+											 
 										</td>
 									</tr>";
 									}
@@ -166,6 +184,34 @@ if (isset($_GET['id1'])) {
 						</table>
 						
 					</div> <!-- End #tab1 -->
+
+					<div class="tab-content" id="tab2">
+					
+					<form action="#" method="post">
+						
+						<fieldset> <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+							
+							<p>
+								<label>Tag Name</label>
+									<input class="text-input small-input" type="text" id="small-input" name="tagname" />
+									<br /><small>Enter the new Tag name</small>
+							</p>
+							
+							
+							
+							
+							
+							<p>
+								<input class="button" type="submit" value="Submit" name="submit"/>
+							</p>
+							
+						</fieldset>
+						
+						<div class="clear"></div><!-- End .clear -->
+						
+					</form>
+					
+				</div> <!-- End #tab2 -->
 					
 					      
 					
